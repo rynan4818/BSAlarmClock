@@ -1,5 +1,4 @@
-﻿/*
-//using BSAlarmClock.Views;
+﻿using BSAlarmClock.Views;
 using Zenject;
 
 namespace BSAlarmClock.Installers
@@ -8,9 +7,8 @@ namespace BSAlarmClock.Installers
     {
         public override void InstallBindings()
         {
-            //this.Container.BindInterfacesAndSelfTo<SettingTabViewController>().FromNewComponentAsViewController().AsSingle().NonLazy();
-            //this.Container.BindInterfacesAndSelfTo<ConfigViewController>().FromNewComponentAsViewController().AsSingle().NonLazy();
+            this.Container.BindInterfacesAndSelfTo<SettingTabViewController>().FromNewComponentAsViewController().AsSingle().NonLazy();
+            this.Container.BindInterfacesAndSelfTo<MenuViewController>().FromNewComponentAsViewController().AsSingle().NonLazy();
         }
     }
 }
-*/

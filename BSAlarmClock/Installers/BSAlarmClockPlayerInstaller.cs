@@ -1,5 +1,4 @@
-﻿/*
-//using BSAlarmClock.Models;
+﻿using BSAlarmClock.Views;
 using Zenject;
 
 namespace BSAlarmClock.Installers
@@ -8,8 +7,7 @@ namespace BSAlarmClock.Installers
     {
         public override void InstallBindings()
         {
-            //this.Container.BindInterfacesAndSelfTo<BSAlarmClockController>().FromNewComponentOnNewGameObject().AsCached().NonLazy();
+            this.Container.BindInterfacesAndSelfTo<PlayerViewController>().FromNewComponentAsViewController().AsCached().NonLazy();
         }
     }
 }
-*/

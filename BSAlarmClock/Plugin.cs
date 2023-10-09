@@ -1,4 +1,4 @@
-﻿//using BSAlarmClock.Installers;
+﻿using BSAlarmClock.Installers;
 using IPA;
 using IPA.Config;
 using IPA.Config.Stores;
@@ -32,13 +32,13 @@ namespace BSAlarmClock
             Log.Info("BSAlarmClock initialized.");
 
             //BSIPAのConfigを使用する場合はコメントを外します
-            //Configuration.PluginConfig.Instance = conf.Generated<Configuration.PluginConfig>();
-            //Log.Debug("Config loaded");
+            Configuration.PluginConfig.Instance = conf.Generated<Configuration.PluginConfig>();
+            Log.Debug("Config loaded");
 
             //使用するZenjectのインストーラーのコメントを外します
-            //zenjector.Install<BSAlarmClockAppInstaller>(Location.App);
-            //zenjector.Install<BSAlarmClockMenuInstaller>(Location.Menu);
-            //zenjector.Install<BSAlarmClockPlayerInstaller>(Location.Player);
+            zenjector.Install<BSAlarmClockAppInstaller>(Location.App);
+            zenjector.Install<BSAlarmClockMenuInstaller>(Location.Menu);
+            zenjector.Install<BSAlarmClockPlayerInstaller>(Location.Player);
         }
 
         [OnStart]

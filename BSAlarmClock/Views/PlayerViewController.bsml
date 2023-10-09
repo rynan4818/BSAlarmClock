@@ -1,0 +1,7 @@
+﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+  <bg id='alarmClock' anchor-min-x='0' anchor-max-x='1' anchor-min-y='0' anchor-max-y='1'>
+    <text id='timeValue' align='Center' anchor-min-x='0.5' anchor-max-x='0.5' anchor-min-y='0.8' anchor-max-y='0.8'></text>
+    <text id='timerValue' align='Center' anchor-min-x='0.5' anchor-max-x='0.5' anchor-min-y='0.2' anchor-max-y='0.2'></text>
+    <button text='Alarm Stop' on-click='AlarmStop'></button>
+  </bg>
+</bg>
