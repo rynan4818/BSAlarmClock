@@ -1,72 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using BSAlarmClock.Configuration;
+using System;
 using UnityEngine;
+using Zenject;
 
 namespace BSAlarmClock.Models
 {
-    /// <summary>
-    /// Monobehaviours (scripts) are added to GameObjects.
-    /// For a full list of Messages a Monobehaviour can receive from the game, see https://docs.unity3d.com/ScriptReference/MonoBehaviour.html.
-    /// </summary>
-	public class BSAlarmClockController : MonoBehaviour
+	public class BSAlarmClockController : IInitializable, ITickable
     {
-        #region Monobehaviour Messages
-        /// <summary>
-        /// Only ever called once, mainly used to initialize variables.
-        /// </summary>
-        private void Awake()
+        public float _currentCycleTime;
+        public DateTime _alarmTime;
+        public event Action<string, string> _timeUpdated;
+        public event Action _alarmPing;
+        public bool _gamePlayActive;
+
+        public void Initialize()
         {
-
+            this._currentCycleTime = 0f;
+            this.AlarmSet();
         }
-        /// <summary>
-        /// Only ever called once on the first frame the script is Enabled. Start is called after every other script's Awake() and before Update().
-        /// </summary>
-        private void Start()
+        public void Tick()
         {
-
+            if (this._currentCycleTime >= PluginConfig.Instance.CycleLength)
+            {
+                this._currentCycleTime = 0f;
+                this.TimeUpdate();
+            }
+            this._currentCycleTime += Time.deltaTime;
         }
-
-        /// <summary>
-        /// Called every frame if the script is enabled.
-        /// </summary>
-        private void Update()
+        public void TimeUpdate()
         {
-
+            var timer = "";
+            if (PluginConfig.Instance.AlarmEnabled)
+            {
+                this.CheckAlarm();
+                if (DateTime.Now <= this._alarmTime)
+                    timer = (this._alarmTime - DateTime.Now).ToString(@"hh\:mm\:ss");
+                else
+                    timer = "00:00:00";
+            }
+            this._timeUpdated?.Invoke(DateTime.Now.ToShortTimeString(), timer);
         }
-
-        /// <summary>
-        /// Called every frame after every other enabled script's Update().
-        /// </summary>
-        private void LateUpdate()
+        public void CheckAlarm()
         {
-
+            if(DateTime.Now > this._alarmTime)
+            {
+                this._alarmPing?.Invoke();
+            }
         }
-
-        /// <summary>
-        /// Called when the script becomes enabled and active
-        /// </summary>
-        private void OnEnable()
+        public void AlarmSet()
         {
-
+            var alarm = DateTime.Today.AddHours(PluginConfig.Instance.AlarmHour).AddMinutes(PluginConfig.Instance.AlarmMin);
+            if (DateTime.Now > alarm)
+                alarm = DateTime.Today.AddDays(1).AddHours(PluginConfig.Instance.AlarmHour).AddMinutes(PluginConfig.Instance.AlarmMin);
+            this._alarmTime = alarm;
         }
-
-        /// <summary>
-        /// Called when the script becomes disabled or when it is being destroyed.
-        /// </summary>
-        private void OnDisable()
-        {
-
-        }
-
-        /// <summary>
-        /// Called when the script is being destroyed.
-        /// </summary>
-        private void OnDestroy()
-        {
-
-        }
-        #endregion
     }
 }

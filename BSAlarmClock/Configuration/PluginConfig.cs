@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using CameraUtils.Core;
 using IPA.Config.Stores;
 using IPA.Config.Stores.Attributes;
@@ -9,34 +10,49 @@ namespace BSAlarmClock.Configuration
 {
     internal class PluginConfig
     {
-        public const float DefaultGameScreenPosX = 0f;
-        public const float DefaultGameScreenPosY = 2.7f;
-        public const float DefaultGameScreenPosZ = 1.0f;
-        public const float DefaultMenuScreenPosX = 0f;
-        public const float DefaultMenuScreenPosY = 2.7f;
-        public const float DefaultMenuScreenPosZ = 1.0f;
+        public const float DefaultGameScreenPosX = -1.5f;
+        public const float DefaultGameScreenPosY = 4.0f;
+        public const float DefaultGameScreenPosZ = 6.7f;
+        public const float DefaultMenuScreenPosX = -1.3f;
+        public const float DefaultMenuScreenPosY = 3.1f;
+        public const float DefaultMenuScreenPosZ = 4.2f;
 
         public static PluginConfig Instance { get; set; }
 
-        public virtual bool Enable { get; set; } = true;
-        public virtual bool LockPosition { get; set; } = false;
-        public virtual bool HMDOnly { get; set; } = false;
+        public virtual bool MenuScreenHidden { get; set; } = false;
+        public virtual bool GameScreenHidden { get; set; } = false;
+        public virtual bool MenuLockPosition { get; set; } = false;
+        public virtual bool GameLockPosition { get; set; } = false;
+        public virtual bool MenuHMDOnly { get; set; } = false;
+        public virtual bool GameHMDOnly { get; set; } = false;
         public virtual float GameScreenPosX { get; set; } = DefaultGameScreenPosX;
         public virtual float GameScreenPosY { get; set; } = DefaultGameScreenPosY;
         public virtual float GameScreenPosZ { get; set; } = DefaultGameScreenPosZ;
         public virtual float GameScreenRotX { get; set; } = 0;
         public virtual float GameScreenRotY { get; set; } = 0;
         public virtual float GameScreenRotZ { get; set; } = 0;
-        public virtual float GameScreenSize { get; set; } = 40f;
+        public virtual float GameScreenSize { get; set; } = 15f;
         public virtual float MenuScreenPosX { get; set; } = DefaultMenuScreenPosX;
         public virtual float MenuScreenPosY { get; set; } = DefaultMenuScreenPosY;
         public virtual float MenuScreenPosZ { get; set; } = DefaultMenuScreenPosZ;
         public virtual float MenuScreenRotX { get; set; } = 0;
         public virtual float MenuScreenRotY { get; set; } = 0;
         public virtual float MenuScreenRotZ { get; set; } = 0;
-        public virtual float MenuScreenSize { get; set; } = 40f;
-        public virtual int GameUiSortingOrder {  get; set; } = 31;
+        public virtual float MenuScreenSize { get; set; } = 11f;
+        public virtual int GameUiSortingOrder { get; set; } = 31;
         public virtual int MenuUiSortingOrder { get; set; } = 3;
+        public virtual float CycleLength { get; set; } = 1f;
+        public virtual int AlarmHour { get; set; } = 0;
+        public virtual int AlarmMin { get; set; } = 0;
+        public virtual bool AlarmEnabled { get; set; } = false;
+        public virtual bool AlarmSoundMenuOnly { get; set; } = false;
+        public virtual bool AlarmSoundEnabled { get; set; } = true;
+        public virtual string AlarmSound { get; set; } = "Alarm1.wav";
+        public virtual float ScreenSizeX { get; set; } = 2.5f;
+        public virtual float ScreenSizeY { get; set; } = 2.3f;
+        public virtual float TimeFontSize { get; set; } = 1.2f;
+        public virtual float TimerFontSize { get; set; } = 0.6f;
+        public virtual float AlarmVolume { get; set; } = 100f;
         [UseConverter(typeof(EnumConverter<VisibilityLayer>))]
         public virtual VisibilityLayer DefaultLayer { get; set; } = VisibilityLayer.UI;
         [UseConverter(typeof(EnumConverter<VisibilityLayer>))]

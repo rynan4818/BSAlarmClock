@@ -2,16 +2,20 @@
 using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.ViewControllers;
 using BSAlarmClock.Configuration;
+using BSAlarmClock.Models;
 using CameraUtils.Core;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VRUIControls;
 using Zenject;
+using SiraUtil.Zenject;
 
 namespace BSAlarmClock.Views
 {
@@ -20,42 +24,66 @@ namespace BSAlarmClock.Views
     /// ライセンス:https://github.com/denpadokei/BeatmapInformation/blob/master/LICENSE
 
     [HotReload]
-    public class MenuViewController : BSMLAutomaticViewController, IInitializable
+    public class MenuViewController : BSMLAutomaticViewController, IAsyncInitializable
     {
+        private AudioSource _audioSource;
+        private BSAlarmClockController _bsAlarmClockController;
+        private AlarmSoundController _alarmSoundController;
+        private SettingTabViewController _settingTabViewController;
         public static readonly string SceneMenu = "MainMenu";
-        public readonly GameObject _screenObject = new GameObject("BSAlarmClockScreen");
+        public readonly GameObject _screenObject = new GameObject("BSAlarmClockMenuScreen");
+        public readonly GameObject _audioSourceObject = new GameObject("BSAlarmMenuAudioSource");
 
         public bool _init;
         public bool _active;
         public FloatingScreen _alarmClockScreen;
         public int _sortinglayerOrder;
+        public bool _alarmActive;
 
         [UIComponent("timeValue")]
         public readonly TextMeshProUGUI _timeValue;
         [UIComponent("timerValue")]
         public readonly TextMeshProUGUI _timerValue;
-        public void Initialize()
+
+        [Inject]
+        private void Constractor(BSAlarmClockController bsAlarmClockController, AlarmSoundController alarmSoundController, SettingTabViewController settingTabViewController)
         {
+            this._bsAlarmClockController = bsAlarmClockController;
+            this._alarmSoundController = alarmSoundController;
+            this._settingTabViewController = settingTabViewController;
+        }
+
+        public async Task InitializeAsync(CancellationToken token)
+        {
+            this._alarmActive = false;
             this._init = false;
             this._active = true;
+            SceneManager.activeSceneChanged += this.OnActiveSceneChanged;
+            this._bsAlarmClockController._timeUpdated += this.OnTimeUpdate;
+            this._bsAlarmClockController._alarmPing += this.OnAlarmPing;
             if (_alarmClockScreen != null)
                 return;
-            var screenSize = new Vector2(PluginConfig.Instance.MenuScreenSize * 3f, PluginConfig.Instance.MenuScreenSize * 2f);
+            var screenSize = new Vector2(PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.ScreenSizeX, PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.ScreenSizeY);
             var screenPosition = new Vector3(PluginConfig.Instance.MenuScreenPosX, PluginConfig.Instance.MenuScreenPosY, PluginConfig.Instance.MenuScreenPosZ);
-            this._alarmClockScreen = FloatingScreen.CreateFloatingScreen(screenSize, true, screenPosition, Quaternion.identity, 0f, true);
+            this._alarmClockScreen = FloatingScreen.CreateFloatingScreen(screenSize, true, screenPosition, Quaternion.identity);
             this._alarmClockScreen.SetRootViewController(this, AnimationType.None);
             this._alarmClockScreen.transform.SetParent(this._screenObject.transform);
             DontDestroyOnLoad(this._screenObject);
             var canvas = this._alarmClockScreen.GetComponentsInChildren<Canvas>(true).FirstOrDefault();
             canvas.renderMode = RenderMode.WorldSpace;
             this._alarmClockScreen.transform.rotation = Quaternion.Euler(PluginConfig.Instance.MenuScreenRotX, PluginConfig.Instance.MenuScreenRotY, PluginConfig.Instance.MenuScreenRotZ);
-            this._alarmClockScreen.HandleReleased += this.OnHandleReleased;
             this._alarmClockScreen.HandleSide = FloatingScreen.Side.Top;
-            SceneManager.activeSceneChanged += this.ActiveSceneChanged;
+            this._alarmClockScreen.HandleReleased += this.OnHandleReleased;
+            this._audioSource = _audioSourceObject.AddComponent<AudioSource>();
+            DontDestroyOnLoad(this._audioSourceObject);
+            await this.AudioSourceSetttingAsync(token);
         }
+
         protected override void OnDestroy()
         {
-            SceneManager.activeSceneChanged -= this.ActiveSceneChanged;
+            SceneManager.activeSceneChanged -= this.OnActiveSceneChanged;
+            this._bsAlarmClockController._timeUpdated -= this.OnTimeUpdate;
+            this._bsAlarmClockController._alarmPing -= this.OnAlarmPing;
             if (this._alarmClockScreen != null)
             {
                 this._alarmClockScreen.HandleReleased -= this.OnHandleReleased;
@@ -63,6 +91,8 @@ namespace BSAlarmClock.Views
             }
             if (this._screenObject != null)
                 Destroy(this._screenObject);
+            if (this._audioSourceObject != null)
+                Destroy(this._audioSourceObject);
             base.OnDestroy();
         }
 
@@ -83,18 +113,43 @@ namespace BSAlarmClock.Views
             PluginConfig.Instance.MenuScreenRotZ = rot.z;
         }
 
-        public void ActiveSceneChanged(Scene arg0, Scene arg1)
+        public void OnActiveSceneChanged(Scene arg0, Scene arg1)
         {
-            if (arg1.name == SceneMenu && PluginConfig.Instance.Enable)
+            this.ScreenActiveCheck(arg1.name);
+        }
+
+        public void OnTimeUpdate(string time, string timer)
+        {
+            if (this._alarmActive && !PluginConfig.Instance.AlarmEnabled)
+                this._alarmActive = false;
+            if (!this._init || !this._active)
+                return;
+            this._timeValue.text = time;
+            this._timerValue.text = timer;
+            if (this._alarmActive)
             {
-                this._active = true;
-                this._screenObject.SetActive(true);
+                this._timeValue.color = Color.red;
+                this._timerValue.color = Color.red;
             }
             else
             {
-                this._active = false;
-                this._screenObject.SetActive(false);
+                this._timeValue.color = Color.white;
+                this._timerValue.color = Color.white;
             }
+        }
+
+        public void OnAlarmPing()
+        {
+            if (!this._init || !PluginConfig.Instance.AlarmEnabled)
+                return;
+            this.AlarmSoundPlay();
+            if (!this._alarmActive)
+                this._alarmActive = true;
+        }
+        public void AlarmSoundPlay()
+        {
+            if (this._alarmSoundController._AlarmClip != null && !this._audioSource.isPlaying && !this._bsAlarmClockController._gamePlayActive)
+                this._audioSource.PlayOneShot(this._alarmSoundController._AlarmClip);
         }
 
         public IEnumerator CanvasConfigUpdate()
@@ -104,11 +159,8 @@ namespace BSAlarmClock.Views
             {
                 canvas.worldCamera = Camera.main;
                 canvas.sortingOrder = PluginConfig.Instance.MenuUiSortingOrder;
-                if (PluginConfig.Instance.HMDOnly)
-                    canvas.gameObject.SetLayer(PluginConfig.Instance.HMDOnlyLayer);
-                else
-                    canvas.gameObject.SetLayer(PluginConfig.Instance.DefaultLayer);
             }
+            this.CanvasLayerUpdate();
             foreach (var graphic in this._alarmClockScreen.GetComponentsInChildren<Graphic>())
                 graphic.raycastTarget = false;
             try
@@ -122,37 +174,81 @@ namespace BSAlarmClock.Views
             this._alarmClockScreen.ShowHandle = false;
             this._timeValue.color = Color.white;
             this._timeValue.overflowMode = TextOverflowModes.Overflow;
-            this._timeValue.fontSize = PluginConfig.Instance.GameScreenSize / 1.8f;
+            this._timeValue.fontSize = PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.TimeFontSize;
             this._timerValue.color = Color.white;
             this._timerValue.overflowMode = TextOverflowModes.Overflow;
-            this._timerValue.fontSize = PluginConfig.Instance.GameScreenSize / 2.5f;
+            this._timerValue.fontSize = PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.TimerFontSize;
             this._init = true;
-            if (!PluginConfig.Instance.Enable)
+            this._bsAlarmClockController.TimeUpdate();
+            this.ScreenActiveCheck(null);
+            this.HandleCheck();
+        }
+        public void ScreenSizeChange()
+        {
+            this._alarmClockScreen.ScreenSize = new Vector2(PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.ScreenSizeX, PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.ScreenSizeY);
+            this._timeValue.fontSize = PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.TimeFontSize;
+            this._timerValue.fontSize = PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.TimerFontSize;
+            this._alarmClockScreen.transform.position = new Vector3(PluginConfig.Instance.MenuScreenPosX, PluginConfig.Instance.MenuScreenPosY, PluginConfig.Instance.MenuScreenPosZ);
+            this._alarmClockScreen.transform.rotation = Quaternion.Euler(PluginConfig.Instance.MenuScreenRotX, PluginConfig.Instance.MenuScreenRotY, PluginConfig.Instance.MenuScreenRotZ);
+        }
+        public void CanvasLayerUpdate()
+        {
+            foreach (var transform in this._alarmClockScreen.GetComponentsInChildren<Transform>())
+            {
+                if (PluginConfig.Instance.MenuHMDOnly)
+                    transform.gameObject.SetLayer(PluginConfig.Instance.HMDOnlyLayer);
+                else
+                    transform.gameObject.SetLayer(PluginConfig.Instance.DefaultLayer);
+            }
+        }
+        public void HandleCheck()
+        {
+            if (PluginConfig.Instance.MenuLockPosition)
+            {
+                if (this._alarmClockScreen == null || !this._active)
+                    return;
+                this._alarmClockScreen.ShowHandle = false;
+            }
+            else
+            {
+                if (this._alarmClockScreen == null || !this._active)
+                    return;
+                this._alarmClockScreen.ShowHandle = true;
+            }
+        }
+        public void ScreenActiveCheck(string sceneName)
+        {
+            if (sceneName == null)
+                sceneName = SceneMenu;
+            if (sceneName == SceneMenu && !PluginConfig.Instance.MenuScreenHidden)
+            {
+                this._active = true;
+                this._screenObject.SetActive(true);
+            }
+            else
             {
                 this._active = false;
                 this._screenObject.SetActive(false);
             }
         }
-        public void SetValue(string time, string timer)
-        {
-            if (!this._init || !this._active)
-                return;
-            this._timeValue.text = time;
-            this._timerValue.text = timer;
-        }
 
-        public void ShowHandle()
+        private async Task AudioSourceSetttingAsync(CancellationToken token)
         {
-            if (this._alarmClockScreen == null || !this._active)
+            while (!token.IsCancellationRequested && this._audioSource == null)
+            {
+                await Task.Yield();
+            }
+            if (token.IsCancellationRequested)
+            {
                 return;
-            this._alarmClockScreen.ShowHandle = false;
+            }
+            this._audioSource.volume = PluginConfig.Instance.AlarmVolume / 100f;
         }
-
-        public void HideHandle()
+        public void AudioSourceSetting()
         {
-            if (this._alarmClockScreen == null || !this._active)
+            if (this._audioSource == null)
                 return;
-            this._alarmClockScreen.ShowHandle = true;
+            this._audioSource.volume = PluginConfig.Instance.AlarmVolume / 100f;
         }
     }
 }

@@ -7,7 +7,8 @@ namespace BSAlarmClock.Installers
     {
         public override void InstallBindings()
         {
-            this.Container.BindInterfacesAndSelfTo<BSAlarmClockController>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
+            this.Container.BindInterfacesAndSelfTo<BSAlarmClockController>().AsSingle().NonLazy();
+            this.Container.BindInterfacesAndSelfTo<AlarmSoundController>().AsSingle().NonLazy();
         }
     }
 }
