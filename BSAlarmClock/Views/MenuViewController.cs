@@ -11,11 +11,12 @@ using System.Threading.Tasks;
 using System.Threading;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using VRUIControls;
 using Zenject;
 using SiraUtil.Zenject;
+using BeatSaberMarkupLanguage;
 
 namespace BSAlarmClock.Views
 {
@@ -44,6 +45,8 @@ namespace BSAlarmClock.Views
         public readonly TextMeshProUGUI _timeValue;
         [UIComponent("timerValue")]
         public readonly TextMeshProUGUI _timerValue;
+        [UIComponent("AlarmStopButton")]
+        public readonly Button _alarmStopButton;
 
         [Inject]
         private void Constractor(BSAlarmClockController bsAlarmClockController, AlarmSoundController alarmSoundController, SettingTabViewController settingTabViewController)
@@ -68,6 +71,7 @@ namespace BSAlarmClock.Views
             this._alarmClockScreen = FloatingScreen.CreateFloatingScreen(screenSize, true, screenPosition, Quaternion.identity);
             this._alarmClockScreen.SetRootViewController(this, AnimationType.None);
             this._alarmClockScreen.transform.SetParent(this._screenObject.transform);
+            this._alarmStopButton.SetButtonTextSize(PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.AlarmStopButtonSize);
             DontDestroyOnLoad(this._screenObject);
             var canvas = this._alarmClockScreen.GetComponentsInChildren<Canvas>(true).FirstOrDefault();
             canvas.renderMode = RenderMode.WorldSpace;
@@ -76,6 +80,7 @@ namespace BSAlarmClock.Views
             this._alarmClockScreen.HandleReleased += this.OnHandleReleased;
             this._audioSource = _audioSourceObject.AddComponent<AudioSource>();
             DontDestroyOnLoad(this._audioSourceObject);
+            this._alarmStopButton.gameObject.SetActive(false);
             await this.AudioSourceSetttingAsync(token);
         }
 
@@ -102,6 +107,15 @@ namespace BSAlarmClock.Views
             StartCoroutine(this.CanvasConfigUpdate());
         }
 
+        [UIAction("AlarmStop")]
+        public void AlarmStop()
+        {
+            PluginConfig.Instance.AlarmEnabled = false;
+            this._bsAlarmClockController.AlarmSet();
+            this._alarmStopButton.gameObject.SetActive(false);
+            this._settingTabViewController.AlarmStatusSet();
+        }
+
         public void OnHandleReleased(object sender, FloatingScreenHandleEventArgs e)
         {
             PluginConfig.Instance.MenuScreenPosX = e.Position.x;
@@ -116,6 +130,14 @@ namespace BSAlarmClock.Views
         public void OnActiveSceneChanged(Scene arg0, Scene arg1)
         {
             this.ScreenActiveCheck(arg1.name);
+            if (arg1.name == SceneMenu)
+            {
+                this._settingTabViewController.AlarmStatusSet();
+                if (PluginConfig.Instance.AlarmEnabled)
+                    this._alarmStopButton.gameObject.SetActive(true);
+                else
+                    this._alarmStopButton.gameObject.SetActive(false);
+            }
         }
 
         public void OnTimeUpdate(string time, string timer)
@@ -144,7 +166,10 @@ namespace BSAlarmClock.Views
                 return;
             this.AlarmSoundPlay();
             if (!this._alarmActive)
+            {
                 this._alarmActive = true;
+                this._alarmStopButton.gameObject.SetActive(true);
+            }
         }
         public void AlarmSoundPlay()
         {
@@ -190,6 +215,7 @@ namespace BSAlarmClock.Views
             this._timerValue.fontSize = PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.TimerFontSize;
             this._alarmClockScreen.transform.position = new Vector3(PluginConfig.Instance.MenuScreenPosX, PluginConfig.Instance.MenuScreenPosY, PluginConfig.Instance.MenuScreenPosZ);
             this._alarmClockScreen.transform.rotation = Quaternion.Euler(PluginConfig.Instance.MenuScreenRotX, PluginConfig.Instance.MenuScreenRotY, PluginConfig.Instance.MenuScreenRotZ);
+            this._alarmStopButton.SetButtonTextSize(PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.AlarmStopButtonSize);
         }
         public void CanvasLayerUpdate()
         {

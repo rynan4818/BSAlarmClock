@@ -53,6 +53,7 @@ namespace BSAlarmClock.Models
             if (DateTime.Now > alarm)
                 alarm = DateTime.Today.AddDays(1).AddHours(PluginConfig.Instance.AlarmHour).AddMinutes(PluginConfig.Instance.AlarmMin);
             this._alarmTime = alarm;
+            this.TimeUpdate();
         }
     }
 }

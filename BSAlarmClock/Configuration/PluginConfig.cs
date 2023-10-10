@@ -14,7 +14,7 @@ namespace BSAlarmClock.Configuration
         public const float DefaultGameScreenPosY = 4.0f;
         public const float DefaultGameScreenPosZ = 6.7f;
         public const float DefaultMenuScreenPosX = -1.3f;
-        public const float DefaultMenuScreenPosY = 3.1f;
+        public const float DefaultMenuScreenPosY = 3.3f;
         public const float DefaultMenuScreenPosZ = 4.2f;
 
         public static PluginConfig Instance { get; set; }
@@ -49,9 +49,10 @@ namespace BSAlarmClock.Configuration
         public virtual bool AlarmSoundEnabled { get; set; } = true;
         public virtual string AlarmSound { get; set; } = "Alarm1.wav";
         public virtual float ScreenSizeX { get; set; } = 2.5f;
-        public virtual float ScreenSizeY { get; set; } = 2.3f;
+        public virtual float ScreenSizeY { get; set; } = 2.8f;
         public virtual float TimeFontSize { get; set; } = 1.2f;
         public virtual float TimerFontSize { get; set; } = 0.6f;
+        public virtual float AlarmStopButtonSize { get; set; } = 0.45f;
         public virtual float AlarmVolume { get; set; } = 100f;
         [UseConverter(typeof(EnumConverter<VisibilityLayer>))]
         public virtual VisibilityLayer DefaultLayer { get; set; } = VisibilityLayer.UI;

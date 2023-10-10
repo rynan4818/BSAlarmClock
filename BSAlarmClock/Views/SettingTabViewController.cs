@@ -5,6 +5,7 @@ using BSAlarmClock.Configuration;
 using BSAlarmClock.Models;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using Zenject;
 
 namespace BSAlarmClock.Views
@@ -21,6 +22,8 @@ namespace BSAlarmClock.Views
 
         [UIValue("AlarmSoundChoices")]
         public List<object> AlarmSoundChoices { get; set; } = new List<object>();
+        [UIComponent("AlarmStatus")]
+        private readonly TextMeshProUGUI _alarmStatus;
 
         [Inject]
         private void Constractor(AlarmSoundController alarmSoundController, MenuViewController menuViewController, BSAlarmClockController bSAlarmClockController)
@@ -43,23 +46,20 @@ namespace BSAlarmClock.Views
             base.OnDestroy();
         }
 
+        public void AlarmStatusSet()
+        {
+            if (PluginConfig.Instance.AlarmEnabled)
+                this._alarmStatus.text = "Alarm Status [ON]";
+            else
+                this._alarmStatus.text = "Alarm Status [OFF]";
+        }
+
         [UIAction("#post-parse")]
         internal void PostParse()
         {
-            // Code to run after BSML finishes
+            this.AlarmStatusSet();
         }
 
-        [UIValue("AlarmEnabled")]
-        public bool AlarmEnabled
-        {
-            get => PluginConfig.Instance.AlarmEnabled;
-            set
-            {
-                PluginConfig.Instance.AlarmEnabled = value;
-                this._bsAlarmClockController.AlarmSet();
-                NotifyPropertyChanged();
-            }
-        }
         [UIValue("AlarmHour")]
         public int AlarmHour
         {
@@ -240,6 +240,31 @@ namespace BSAlarmClock.Views
                 PluginConfig.Instance.TimerFontSize = value;
                 this._menuViewController.ScreenSizeChange();
             }
+        }
+        [UIValue("AlarmStopButtonSize")]
+        public float AlarmStopButtonSize
+        {
+            get => PluginConfig.Instance.AlarmStopButtonSize;
+            set
+            {
+                PluginConfig.Instance.AlarmStopButtonSize = value;
+                this._menuViewController.ScreenSizeChange();
+            }
+        }
+        [UIAction("AlarmON")]
+        public void AlarmON()
+        {
+            PluginConfig.Instance.AlarmEnabled = true;
+            this.AlarmStatusSet();
+            this._bsAlarmClockController.AlarmSet();
+        }
+        [UIAction("AlarmOFF")]
+        public void AlarmOFF()
+        {
+            PluginConfig.Instance.AlarmEnabled = false;
+            this.AlarmStatusSet();
+            this._menuViewController._alarmStopButton.gameObject.SetActive(false);
+            this._bsAlarmClockController.AlarmSet();
         }
         [UIAction("AlarmTest")]
         public void AlarmTest()

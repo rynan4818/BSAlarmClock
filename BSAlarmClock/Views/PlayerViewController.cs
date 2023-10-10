@@ -2,21 +2,21 @@
 using BeatSaberMarkupLanguage.FloatingScreen;
 using BeatSaberMarkupLanguage.ViewControllers;
 using BSAlarmClock.Configuration;
-using IPA.Utilities;
+using BSAlarmClock.Models;
+using CameraUtils.Core;
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 using VRUIControls;
-using CameraUtils.Core;
-using TMPro;
-using BSAlarmClock.Models;
+using Zenject;
 using SiraUtil.Zenject;
-using System.Threading;
-using System.Threading.Tasks;
-using System.IO;
+using IPA.Utilities;
+using BeatSaberMarkupLanguage;
 
 namespace BSAlarmClock.Views
 {
@@ -31,7 +31,6 @@ namespace BSAlarmClock.Views
         private AudioSource _audioSource;
         private BSAlarmClockController _bsAlarmClockController;
         private AlarmSoundController _alarmSoundController;
-
         public readonly GameObject _screenObject = new GameObject("BSAlarmClockMenuScreen");
         public readonly GameObject _audioSourceObject = new GameObject("BSAlarmGameAudioSource");
         public bool _init;
@@ -67,11 +66,12 @@ namespace BSAlarmClock.Views
                 this._pauseController.didPauseEvent += this.OnDidPauseEvent;
                 this._pauseController.didResumeEvent += this.OnDidResumeEvent;
             }
-            var screenSize = new Vector2(PluginConfig.Instance.GameScreenSize * PluginConfig.Instance.ScreenSizeX, PluginConfig.Instance.GameScreenSize * (PluginConfig.Instance.ScreenSizeY + 0.5f));
+            var screenSize = new Vector2(PluginConfig.Instance.GameScreenSize * PluginConfig.Instance.ScreenSizeX, PluginConfig.Instance.GameScreenSize * PluginConfig.Instance.ScreenSizeY);
             var screenPosition = new Vector3(PluginConfig.Instance.GameScreenPosX, PluginConfig.Instance.GameScreenPosY, PluginConfig.Instance.GameScreenPosZ);
             this._alarmClockScreen = FloatingScreen.CreateFloatingScreen(screenSize, true, screenPosition, Quaternion.Euler(0f, 0f, 0f));
             this._alarmClockScreen.transform.SetParent(this._screenObject.transform);
             this._alarmClockScreen.SetRootViewController(this, AnimationType.None);
+            this._alarmStopButton.SetButtonTextSize(PluginConfig.Instance.MenuScreenSize * PluginConfig.Instance.AlarmStopButtonSize);
             var canvas = this._alarmClockScreen.GetComponentsInChildren<Canvas>(true).FirstOrDefault();
             canvas.renderMode = RenderMode.WorldSpace;
             this._alarmClockScreen.transform.rotation = Quaternion.Euler(PluginConfig.Instance.GameScreenRotX, PluginConfig.Instance.GameScreenRotY, PluginConfig.Instance.GameScreenRotZ);
@@ -116,6 +116,7 @@ namespace BSAlarmClock.Views
             PluginConfig.Instance.AlarmEnabled = false;
             this._bsAlarmClockController.AlarmSet();
             this._hiddenAlarm = false;
+            this._alarmStopButton.gameObject.SetActive(false);
         }
 
         public void OnHandleReleased(object sender, FloatingScreenHandleEventArgs e)
@@ -183,10 +184,7 @@ namespace BSAlarmClock.Views
             if (this._alarmSoundController._AlarmClip != null && !this._audioSource.isPlaying && !PluginConfig.Instance.AlarmSoundMenuOnly && PluginConfig.Instance.AlarmSoundEnabled)
                 this._audioSource.PlayOneShot(this._alarmSoundController._AlarmClip);
             if (!this._alarmActive)
-            {
-                this._alarmStopButton.gameObject.SetActive(true);
                 this._alarmActive = true;
-            }
         }
 
         public IEnumerator CanvasConfigUpdate()

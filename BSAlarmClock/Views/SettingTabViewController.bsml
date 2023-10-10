@@ -2,7 +2,10 @@
 	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
   <settings-container>
     <horizontal>
-      <checkbox-setting text='Alarm Enabled' value='AlarmEnabled' bind-value="true" apply-on-change="true"></checkbox-setting>
+      <text id='AlarmStatus' align='Center' font-size='5' size-delta-x='100' size-delta-y='6'></text>
+      <text text='   Alarm ' align='Center' font-size='5' size-delta-x='100' size-delta-y='6'></text>
+      <button text=' ON  ' on-click='AlarmON'></button>
+      <button text=' OFF ' on-click='AlarmOFF'></button>
     </horizontal>
     <horizontal min-width='80'>
       <horizontal pref-width='0'>
@@ -34,8 +37,8 @@
         <button text='Test' on-click='AlarmTest'></button>
       </horizontal>
     </horizontal>
-    <checkbox-setting text='Alarm Sound Menu Only' value='AlarmSoundMenuOnly' apply-on-change="true"></checkbox-setting>
     <increment-setting text="Alarm Sound Volume" value="AlarmVolume" increment="1" min="0" max="100" integer-only="true" apply-on-change="true"></increment-setting>
+    <checkbox-setting text='Alarm Sound Menu Only' value='AlarmSoundMenuOnly' apply-on-change="true"></checkbox-setting>
     <checkbox-setting text='Menu Scene Lock Position' value='MenuLockPosition' apply-on-change="true"></checkbox-setting>
     <checkbox-setting text='Game Scene Lock Position' value='GameLockPosition' apply-on-change="true"></checkbox-setting>
     <checkbox-setting text='Menu Scene Screen Hidden' value='MenuScreenHidden' apply-on-change="true"></checkbox-setting>
@@ -48,9 +51,10 @@
       <button text='Reset Menu Scene Position' on-click='ResetMenuPosition'></button>
       <button text='Reset Game Scene Position' on-click='ResetGamePosition'></button>
     </horizontal>
-    <increment-setting text="ScreenSizeX" value="ScreenSizeX" increment="0.1" min="0.1" max="10" apply-on-change="true"></increment-setting>
-    <increment-setting text="ScreenSizeY" value="ScreenSizeY" increment="0.1" min="0.1" max="10" apply-on-change="true"></increment-setting>
-    <increment-setting text="TimeFontSize" value="TimeFontSize" increment="0.1" min="0.1" max="10" apply-on-change="true"></increment-setting>
-    <increment-setting text="TimerFontSize" value="TimerFontSize" increment="0.1" min="0.1" max="10" apply-on-change="true"></increment-setting>
+    <increment-setting text="Screen Size X" value="ScreenSizeX" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
+    <increment-setting text="Screen Size Y" value="ScreenSizeY" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
+    <increment-setting text="Time Font Size" value="TimeFontSize" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
+    <increment-setting text="Timer Font Size" value="TimerFontSize" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
+    <increment-setting text="Alarm Stop Button Size" value="AlarmStopButtonSize" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
   </settings-container>
 </bg>
