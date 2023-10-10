@@ -63,4 +63,9 @@
 * `Timer Font Size`はタイマー表示文字サイズです。
 * `Alarm Stop Button Size`はアラームストップボタンのサイズです。
 
+# アラーム音声ファイルについて
+[freesound](https://freesound.org/)の以下のファイルを加工して使用しています。
 
+[Alarm Clock's alarm on.wav](https://freesound.org/people/PlayPauseAndRewind/sounds/120526/)
+
+ライセンスは[CC0 License](https://creativecommons.org/publicdomain/zero/1.0/)です。
