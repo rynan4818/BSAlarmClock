@@ -3,6 +3,7 @@ using BeatSaberMarkupLanguage.GameplaySetup;
 using BeatSaberMarkupLanguage.ViewControllers;
 using BSAlarmClock.Configuration;
 using BSAlarmClock.Models;
+using IPA.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -108,7 +109,7 @@ namespace BSAlarmClock.Views
             set
             {
                 PluginConfig.Instance.AlarmSound = value;
-                _= this._alarmSoundController.LoadAlarmClipAsync();
+                Coroutines.AsTask(this._alarmSoundController.LoadAlarmClipCoroutine());
             }
         }
         [UIValue("AlarmSoundMenuOnly")]

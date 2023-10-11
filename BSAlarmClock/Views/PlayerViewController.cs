@@ -148,7 +148,8 @@ namespace BSAlarmClock.Views
         {
             if (this._hiddenAlarm)
                 this._screenObject.SetActive(true);
-            this._alarmStopButton.gameObject.SetActive(true);
+            if (PluginConfig.Instance.AlarmEnabled)
+                this._alarmStopButton.gameObject.SetActive(true);
             if (PluginConfig.Instance.GameLockPosition || PluginConfig.Instance.GameScreenHidden)
                 return;
             if (this._alarmClockScreen == null)
