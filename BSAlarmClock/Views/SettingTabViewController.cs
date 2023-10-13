@@ -23,6 +23,8 @@ namespace BSAlarmClock.Views
 
         [UIValue("AlarmSoundChoices")]
         public List<object> AlarmSoundChoices { get; set; } = new List<object>();
+        [UIValue("TimeFormatChoices")]
+        public List<object> TimeFormatChoices { get; set; } = new List<object>();
         [UIComponent("AlarmStatus")]
         private readonly TextMeshProUGUI _alarmStatus;
 
@@ -39,6 +41,8 @@ namespace BSAlarmClock.Views
             GameplaySetup.instance.AddTab(TabName, this.ResourceName, this, MenuType.All);
             foreach (var file in this._alarmSoundController.GetAlarmFiles())
                 AlarmSoundChoices.Add(file);
+            foreach (var format in PluginConfig.Instance.TimeFormat)
+                TimeFormatChoices.Add(format.Format);
         }
 
         protected override void OnDestroy()
@@ -202,6 +206,24 @@ namespace BSAlarmClock.Views
                 this._menuViewController.ScreenSizeChange();
             }
         }
+        [UIValue("TimeFormat")]
+        public string TimeFormat
+        {
+            get => PluginConfig.Instance.TimeFormatSelect;
+            set
+            {
+                PluginConfig.Instance.TimeFormatSelect = value;
+                foreach(var format in PluginConfig.Instance.TimeFormat)
+                {
+                    if (format.Format == value)
+                    {
+                        this.ScreenSizeX = format.ScreenSizeX;
+                        this._bsAlarmClockController._timeFormat = format.Format;
+                        break;
+                    }
+                }
+            }
+        }
         [UIValue("ScreenSizeX")]
         public float ScreenSizeX
         {
@@ -210,6 +232,15 @@ namespace BSAlarmClock.Views
             {
                 PluginConfig.Instance.ScreenSizeX = value;
                 this._menuViewController.ScreenSizeChange();
+                foreach (var format in PluginConfig.Instance.TimeFormat)
+                {
+                    if (format.Format == this.TimeFormat)
+                    {
+                        format.ScreenSizeX = value;
+                        break;
+                    }
+                }
+                NotifyPropertyChanged();
             }
         }
         [UIValue("ScreenSizeY")]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using CameraUtils.Core;
 using IPA.Config.Stores;
@@ -16,6 +17,8 @@ namespace BSAlarmClock.Configuration
         public const float DefaultMenuScreenPosX = -1.3f;
         public const float DefaultMenuScreenPosY = 3.3f;
         public const float DefaultMenuScreenPosZ = 4.2f;
+        public const string ShortTimeString = "ShortTimeString";
+        public const string LongTimeString = "LongTimeString";
 
         public static PluginConfig Instance { get; set; }
 
@@ -58,7 +61,51 @@ namespace BSAlarmClock.Configuration
         public virtual VisibilityLayer DefaultLayer { get; set; } = VisibilityLayer.UI;
         [UseConverter(typeof(EnumConverter<VisibilityLayer>))]
         public virtual VisibilityLayer HMDOnlyLayer { get; set; } = VisibilityLayer.HmdOnlyAndReflected;
-
+        [UseConverter(typeof(ListConverter<TimeFormatSetting>))]
+        public virtual List<TimeFormatSetting> TimeFormat { get; set; } = new List<TimeFormatSetting>()
+        {
+            new TimeFormatSetting()
+            {
+                Format = ShortTimeString,
+                ScreenSizeX = 2.5f
+            },
+            new TimeFormatSetting()
+            {
+                Format = LongTimeString,
+                ScreenSizeX = 4.0f
+            },
+            new TimeFormatSetting()
+            {
+                Format = "H:mm",
+                ScreenSizeX = 2.5f
+            },
+            new TimeFormatSetting()
+            {
+                Format = "H:mm:ss",
+                ScreenSizeX = 4.0f
+            },
+            new TimeFormatSetting()
+            {
+                Format = "h:mm tt",
+                ScreenSizeX = 5.5f
+            },
+            new TimeFormatSetting()
+            {
+                Format = "h:mm:ss tt",
+                ScreenSizeX = 6.5f
+            },
+            new TimeFormatSetting()
+            {
+                Format = "HH:mm",
+                ScreenSizeX = 2.5f
+            },
+            new TimeFormatSetting()
+            {
+                Format = "HH:mm:ss",
+                ScreenSizeX = 4.0f
+            }
+        };
+        public virtual string TimeFormatSelect { get; set; } = ShortTimeString;
         /// <summary>
         /// これは、BSIPAが設定ファイルを読み込むたびに（ファイルの変更が検出されたときを含めて）呼び出されます
         /// </summary>
@@ -82,5 +129,12 @@ namespace BSAlarmClock.Configuration
         {
             // このインスタンスのメンバーは他から移入されました
         }
+    }
+    public class TimeFormatSetting
+    {
+        [NonNullable]
+        public virtual string Format { get; set; }
+        [NonNullable]
+        public virtual float ScreenSizeX { get; set; }
     }
 }
