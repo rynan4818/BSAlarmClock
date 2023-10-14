@@ -67,21 +67,17 @@ namespace BSAlarmClock.Models
         }
         public string ToTimeFormatString(DateTime time)
         {
-            switch (this._timeFormat)
+            if (this._timeFormat == PluginConfig.ShortTimeString)
+                return time.ToShortTimeString();
+            if (this._timeFormat == PluginConfig.LongTimeString)
+                return time.ToLongTimeString();
+            try
             {
-                case PluginConfig.ShortTimeString:
-                    return time.ToShortTimeString();
-                case PluginConfig.LongTimeString:
-                    return time.ToLongTimeString();
-                default:
-                    try
-                    {
-                        return time.ToString(this._timeFormat);
-                    }
-                    catch (FormatException)
-                    {
-                        return time.ToShortDateString();
-                    }
+                return time.ToString(this._timeFormat);
+            }
+            catch (FormatException)
+            {
+                return time.ToShortDateString();
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using CameraUtils.Core;
 using IPA.Config.Stores;
@@ -11,14 +12,14 @@ namespace BSAlarmClock.Configuration
 {
     internal class PluginConfig
     {
-        public const float DefaultGameScreenPosX = -1.5f;
-        public const float DefaultGameScreenPosY = 4.0f;
-        public const float DefaultGameScreenPosZ = 6.7f;
-        public const float DefaultMenuScreenPosX = -1.3f;
-        public const float DefaultMenuScreenPosY = 3.3f;
-        public const float DefaultMenuScreenPosZ = 4.2f;
-        public const string ShortTimeString = "ShortTimeString";
-        public const string LongTimeString = "LongTimeString";
+        public static readonly float DefaultGameScreenPosX = -1.5f;
+        public static readonly float DefaultGameScreenPosY = 4.0f;
+        public static readonly float DefaultGameScreenPosZ = 6.7f;
+        public static readonly float DefaultMenuScreenPosX = -1.3f;
+        public static readonly float DefaultMenuScreenPosY = 3.3f;
+        public static readonly float DefaultMenuScreenPosZ = 4.2f;
+        public static readonly string ShortTimeString = "ShortTimeString";
+        public static readonly string LongTimeString = "LongTimeString";
 
         public static PluginConfig Instance { get; set; }
 
@@ -51,7 +52,7 @@ namespace BSAlarmClock.Configuration
         public virtual bool AlarmSoundMenuOnly { get; set; } = false;
         public virtual bool AlarmSoundEnabled { get; set; } = true;
         public virtual string AlarmSound { get; set; } = "Alarm1.wav";
-        public virtual float ScreenSizeX { get; set; } = 2.5f;
+        public virtual float ScreenSizeX { get; set; } = DefaultScreenSizeX(ShortTimeString);
         public virtual float ScreenSizeY { get; set; } = 2.8f;
         public virtual float TimeFontSize { get; set; } = 1.2f;
         public virtual float TimerFontSize { get; set; } = 0.6f;
@@ -67,12 +68,12 @@ namespace BSAlarmClock.Configuration
             new TimeFormatSetting()
             {
                 Format = ShortTimeString,
-                ScreenSizeX = 2.5f
+                ScreenSizeX = DefaultScreenSizeX(ShortTimeString)
             },
             new TimeFormatSetting()
             {
                 Format = LongTimeString,
-                ScreenSizeX = 4.0f
+                ScreenSizeX = DefaultScreenSizeX(LongTimeString)
             },
             new TimeFormatSetting()
             {
@@ -128,6 +129,20 @@ namespace BSAlarmClock.Configuration
         public virtual void CopyFrom(PluginConfig other)
         {
             // このインスタンスのメンバーは他から移入されました
+        }
+        public static float DefaultScreenSizeX(string timeFormat)
+        {
+            if (timeFormat == ShortTimeString)
+                if (CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.Contains("t"))
+                    return 5.5f;
+                else
+                    return 2.5f;
+            if (timeFormat == LongTimeString)
+                if (CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern.Contains("t"))
+                    return 6.5f;
+                else
+                    return 4.0f;
+            return 6.5f;
         }
     }
     public class TimeFormatSetting
