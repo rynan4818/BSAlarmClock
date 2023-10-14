@@ -133,7 +133,7 @@ namespace BSAlarmClock.Views
             if (arg1.name == SceneMenu)
             {
                 this._settingTabViewController.AlarmStatusSet();
-                if (PluginConfig.Instance.AlarmEnabled)
+                if (PluginConfig.Instance.AlarmEnabled && this._alarmActive)
                     this._alarmStopButton.gameObject.SetActive(true);
                 else
                     this._alarmStopButton.gameObject.SetActive(false);
