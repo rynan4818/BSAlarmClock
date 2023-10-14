@@ -53,9 +53,9 @@
 * `Menu/Game Scene Screen Size`は時計表示のサイズです。
 * `RESET MENU/GAME SCENE POSITION`を押すと、位置が初期値に戻ります。
 
-![image](https://github.com/rynan4818/BSAlarmClock/assets/14249877/4f72e8d0-ec32-4b0c-8e97-2a65dc229d8c)
+![image](https://github.com/rynan4818/BSAlarmClock/assets/14249877/cf2714b1-9576-4b11-b5e4-e0e58086ac5f)
 
-* `Time Fomart`は時刻表示のフォーマットです。変更すると設定に合わせて`Screen Size X`も変更されます。
+* `Time Format`は時刻表示のフォーマットです。変更すると設定に合わせて`Screen Size X`も変更されます。
     * `ShortTimeString` : 短い形式の時刻表示です。
     * `LongTimeString` : 長い形式の時刻表示です。
     * `H:mm` : 24時間表記　時:分 (例 8:45 , 20:45)
