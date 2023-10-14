@@ -3,7 +3,7 @@
   "id": "BSAlarmClock",
   "name": "BSAlarmClock",
   "author": "Rynan",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Freely placed alarm clock",
   "gameVersion": "1.26.0",
   "dependsOn": {
