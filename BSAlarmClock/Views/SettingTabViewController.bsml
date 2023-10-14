@@ -51,7 +51,7 @@
       <button text='Reset Menu Scene Position' on-click='ResetMenuPosition'></button>
       <button text='Reset Game Scene Position' on-click='ResetGamePosition'></button>
     </horizontal>
-    <dropdown-list-setting text="Time Fomart" choices='TimeFormatChoices' value="TimeFormat" apply-on-change="true"></dropdown-list-setting>
+    <dropdown-list-setting text="Time Format" choices='TimeFormatChoices' value="TimeFormat" apply-on-change="true"></dropdown-list-setting>
     <increment-setting text="Screen Size X" value="ScreenSizeX" bind-value="true" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
     <increment-setting text="Screen Size Y" value="ScreenSizeY" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
     <increment-setting text="Time Font Size" value="TimeFontSize" increment="0.05" min="0.1" max="10" apply-on-change="true"></increment-setting>
