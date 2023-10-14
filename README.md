@@ -53,6 +53,30 @@
 * `Menu/Game Scene Screen Size`は時計表示のサイズです。
 * `RESET MENU/GAME SCENE POSITION`を押すと、位置が初期値に戻ります。
 
+![image](https://github.com/rynan4818/BSAlarmClock/assets/14249877/4f72e8d0-ec32-4b0c-8e97-2a65dc229d8c)
+
+* `Time Fomart`は時刻表示のフォーマットです。変更すると設定に合わせて`Screen Size X`も変更されます。
+    * `ShortTimeString` : 短い形式の時刻表示です。
+    * `LongTimeString` : 長い形式の時刻表示です。
+    * `H:mm` : 24時間表記　時:分 (例 8:45 , 20:45)
+    * `H:mm:ss` : 24時間表記　時:分:秒 (例 8:45:30 , 20:45:30)
+    * `h:mm tt` : 12時間表記　時:分 午前/午後 (例 8:45 午前 , 8:45 午後)
+    * `h:mm:ss tt` : 12時間表記　時:分:秒 午前/午後 (例 8:45:30 午前 , 8:45:30 午後)
+    * `HH:mm` : 24時間表記　時:分 (例 08:45 , 20:45)
+    * `HH:mm:ss` : 24時間表記　時:分:秒 (例 08:45:30 , 20:45:30)
+
+    ※上記設定は`UserData/BSAlarmClock.json`の`TimeFormat`にカスタムで追加することもできます。`Format`の設定文字列は[カスタム日付形式文字列](https://learn.microsoft.com/ja-jp/dotnet/standard/base-types/custom-date-and-time-format-strings)に従って下さい。
+
+    短い形式・長い形式はWindowsの設定の`地域`にあります。
+  
+    ![image](https://github.com/rynan4818/BSAlarmClock/assets/14249877/070494d0-8fcd-4380-81d8-83edf6b3bf38)
+
+    追加の設定から表記や午前・午後の記号を変更できます。
+  
+    ![image](https://github.com/rynan4818/BSAlarmClock/assets/14249877/b47c839e-0063-45c0-b50d-8f66993d3f1a)
+
+    *ただし、変更するとOS全体に影響しますので注意して下さい*
+
 ![image](https://github.com/rynan4818/BSAlarmClock/assets/14249877/1c715885-c505-4e3e-97b9-cdd57a01964c)
 
 * `Screen Size X/Y`はスクリーンの基本サイズです。
