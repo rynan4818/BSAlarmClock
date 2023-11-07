@@ -11,8 +11,9 @@ using Zenject;
 
 namespace BSAlarmClock.Views
 {
-    public class SettingTabViewController : BSMLAutomaticViewController, IInitializable
+    public class SettingTabViewController : BSMLAutomaticViewController, IInitializable, IDisposable
     {
+        private bool _disposedValue;
         private AlarmSoundController _alarmSoundController;
         private MenuViewController _menuViewController;
         private BSAlarmClockController _bsAlarmClockController;
@@ -45,10 +46,22 @@ namespace BSAlarmClock.Views
                 TimeFormatChoices.Add(format.Format);
         }
 
-        protected override void OnDestroy()
+        protected virtual void Dispose(bool disposing)
         {
-            GameplaySetup.instance?.RemoveTab(TabName);
-            base.OnDestroy();
+            if (!this._disposedValue)
+            {
+                if (disposing)
+                {
+                    GameplaySetup.instance?.RemoveTab(TabName);
+                }
+                this._disposedValue = true;
+            }
+        }
+        public void Dispose()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         public void AlarmStatusSet()

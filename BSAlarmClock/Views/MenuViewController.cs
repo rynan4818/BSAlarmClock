@@ -25,8 +25,9 @@ namespace BSAlarmClock.Views
     /// ライセンス:https://github.com/denpadokei/BeatmapInformation/blob/master/LICENSE
 
     [HotReload]
-    public class MenuViewController : BSMLAutomaticViewController, IAsyncInitializable
+    public class MenuViewController : BSMLAutomaticViewController, IAsyncInitializable, IDisposable
     {
+        private bool _disposedValue;
         private AudioSource _audioSource;
         private BSAlarmClockController _bsAlarmClockController;
         private AlarmSoundController _alarmSoundController;
@@ -84,21 +85,34 @@ namespace BSAlarmClock.Views
             await this.AudioSourceSetttingAsync(token);
         }
 
-        protected override void OnDestroy()
+        protected virtual void Dispose(bool disposing)
         {
-            SceneManager.activeSceneChanged -= this.OnActiveSceneChanged;
-            this._bsAlarmClockController._timeUpdated -= this.OnTimeUpdate;
-            this._bsAlarmClockController._alarmPing -= this.OnAlarmPing;
-            if (this._alarmClockScreen != null)
+            if (!this._disposedValue)
             {
-                this._alarmClockScreen.HandleReleased -= this.OnHandleReleased;
-                Destroy(this._alarmClockScreen);
+                if (disposing)
+                {
+                    SceneManager.activeSceneChanged -= this.OnActiveSceneChanged;
+                    this._bsAlarmClockController._timeUpdated -= this.OnTimeUpdate;
+                    this._bsAlarmClockController._alarmPing -= this.OnAlarmPing;
+                    if (this._alarmClockScreen != null)
+                    {
+                        this._alarmClockScreen.HandleReleased -= this.OnHandleReleased;
+                        Destroy(this._alarmClockScreen);
+                    }
+                    if (this._screenObject != null)
+                        Destroy(this._screenObject);
+                    if (this._audioSourceObject != null)
+                        Destroy(this._audioSourceObject);
+                    Plugin.Log.Info("MenuViewController Destroy");
+                }
+                this._disposedValue = true;
             }
-            if (this._screenObject != null)
-                Destroy(this._screenObject);
-            if (this._audioSourceObject != null)
-                Destroy(this._audioSourceObject);
-            base.OnDestroy();
+        }
+        public void Dispose()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを 'Dispose(bool disposing)' メソッドに記述します
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         [UIAction("#post-parse")]
