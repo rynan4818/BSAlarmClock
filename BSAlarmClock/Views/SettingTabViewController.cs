@@ -17,6 +17,7 @@ namespace BSAlarmClock.Views
         private AlarmSoundController _alarmSoundController;
         private MenuViewController _menuViewController;
         private BSAlarmClockController _bsAlarmClockController;
+        private GameplaySetup _gameplaySetup;
         public static readonly string TabName = "BS Alarm Clock";
         public string ResourceName => string.Join(".", this.GetType().Namespace, this.GetType().Name);
         public int _timerHour = 0;
@@ -30,16 +31,17 @@ namespace BSAlarmClock.Views
         private readonly TextMeshProUGUI _alarmStatus;
 
         [Inject]
-        private void Constractor(AlarmSoundController alarmSoundController, MenuViewController menuViewController, BSAlarmClockController bSAlarmClockController)
+        private void Constractor(AlarmSoundController alarmSoundController, MenuViewController menuViewController, BSAlarmClockController bSAlarmClockController, GameplaySetup gameplaySetup)
         {
             this._alarmSoundController = alarmSoundController;
             this._menuViewController = menuViewController;
             this._bsAlarmClockController = bSAlarmClockController;
+            this._gameplaySetup = gameplaySetup;
         }
 
         public void Initialize()
         {
-            GameplaySetup.instance.AddTab(TabName, this.ResourceName, this, MenuType.All);
+            this._gameplaySetup.AddTab(TabName, this.ResourceName, this, MenuType.All);
             foreach (var file in this._alarmSoundController.GetAlarmFiles())
                 AlarmSoundChoices.Add(file);
             foreach (var format in PluginConfig.Instance.TimeFormat)
@@ -52,7 +54,7 @@ namespace BSAlarmClock.Views
             {
                 if (disposing)
                 {
-                    GameplaySetup.instance?.RemoveTab(TabName);
+                    this._gameplaySetup?.RemoveTab(TabName);
                 }
                 this._disposedValue = true;
             }
